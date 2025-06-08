@@ -2,7 +2,7 @@
 
 ## 介绍
 
-deepseek-math 是一个基于 html 和 DeepSeek API 的数学计算工具，支持使用 $\KaTeX$ 渲染公式和使用 DeepSeek API 计算表达式、解方程。
+deepseek-math 是一个基于 html 和 DeepSeek API 的数学计算工具，支持使用 KaTeX 渲染公式和使用 DeepSeek API 计算表达式、解方程。
 
 ## 环境配置
 
