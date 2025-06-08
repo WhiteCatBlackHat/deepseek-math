@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>html 计算器</title>
+    <style>
+        body {
+            background: #f6f8fa;
+            font-family: 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+            color: #222;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 48px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(60, 120, 200, 0.08);
+            padding: 32px 28px 24px 28px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        header h1 {
+            font-size: 2em;
+            font-weight: 600;
+            color: #3a7bd5;
+            margin: 0 0 12px 0;
+            letter-spacing: 1px;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        #calculator {
+            background: #f3f6fb;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px 0 rgba(60, 120, 200, 0.04);
+            padding: 24px 18px 18px 18px;
+            margin-bottom: 12px;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        #input {
+            width: 60%;
+            padding: 8px 12px;
+            border: 1.5px solid #b2c3d9;
+            border-radius: 6px;
+            font-size: 1.08rem;
+            outline: none;
+            transition: border 0.2s;
+            margin-right: 8px;
+        }
+        #input:focus {
+            border-color: #3a7bd5;
+        }
+
+        button {
+            background: linear-gradient(90deg, #3a7bd5 0%, #00d2ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px 0 rgba(60, 120, 200, 0.08);
+        }
+        button:hover {
+            background: linear-gradient(90deg, #2b5fa1 0%, #00b2d6 100%);
+        }
+
+        #showError {
+            accent-color: #3a7bd5;
+            margin-right: 6px;
+        }
+
+        #preview {
+            min-height: 32px;
+            display: inline-block;
+            padding: 4px 10px;
+            background: #eaf2fb;
+            border-radius: 6px;
+            font-size: 1.08rem;
+            color: #3a7bd5;
+            margin-left: 4px;
+            vertical-align: middle;
+            min-width: 60px;
+        }
+
+        #result {
+            margin-top: 10px;
+        }
+        #result p {
+            background: #f6f8fa;
+            border-radius: 8px;
+            padding: 12px 14px 10px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px 0 rgba(60, 120, 200, 0.04);
+            position: relative;
+            font-size: 1.07rem;
+            word-break: break-all;
+        }
+        #result .calc-result {
+            color: #388e3c;
+            font-weight: 600;
+            background: #e8f5e9;
+            border-radius: 5px;
+            padding: 2px 8px;
+            margin: 0 2px;
+            display: inline-block;
+        }
+        a {
+            color: #3a7bd5;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: #005fa3;
+            text-decoration: underline;
+        }
+        #result button {
+            background: #e57373;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 12px;
+            font-size: 0.98rem;
+            font-weight: 400;
+            cursor: pointer;
+            margin-left: 10px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            box-shadow: 0 1px 4px 0 rgba(200, 60, 60, 0.08);
+            transition: background 0.2s;
+        }
+        #result button:hover {
+            background: #c62828;
+        }
+
+        p {
+            margin: 8px 0;
+        }
+
+        span[style*="color:#3a7bd5"] {
+            font-weight: 500;
+        }
+    </style>
+    <!-- 引入 KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <script>
+        // KaTeX 预览和渲染
+        function rerender() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: "$$", right: "$$", hidden: true },
+                    { left: "$", right: "$", hidden: false }
+                ]
+            });
+        }
+        document.addEventListener("DOMContentLoaded", rerender);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>html 计算器</h1>
+            <div style="text-align:center;">
+                <button id="btnCalc" onclick="showPanel('calc')" style="margin-right:10px;">计算器</button>
+                <button id="btnAbout" onclick="showPanel('about')">关于</button>
+            </div>
+        </header>
+        <main>
+            <div id="calculator-panel">
+                <p class="subtitle" style="text-align: center; margin-bottom: 20px; color: #5d7091;">输入表达式或方程后，按 Enter 或“确定”即可计算。</p>
+                <div id="calculator">
+                    <p>
+                        <input type="text" id="input" placeholder="请在此输入表达式或方程" oninput="updatePreview()">
+                        <button onclick="submit()">确定</button>
+                    </p>
+                    <p><input type="checkbox" id="showError" onchange="updatePreview()">显示 KaTeX 语法错误</p>
+                    <p>预览：<span id="preview"></span></p>
+                    <p>已添加的表达式：</p>
+                    <div id="result"></div>
+                </div>
+            </div>
+            <div id="about-panel" style="display:none;">
+                <p style="color: #6a7fa4; font-size: 0.9rem;">
+                    这是一个 html 计算器，由 <a href="https://www.luogu.com.cn/user/958675">lzj</a> 提供想法，
+                    由 <a href="https://www.luogu.com.cn/user/527300">lsw</a>（Github：<a href="https://github.com/WhiteCatBlackHat">WhiteCatBlackHat</a>）实现，
+                    并使用 $\KaTeX$ 进行公式渲染，由 <a href="https://platform.deepseek.com/">DeepSeek API</a> 提供计算功能。
+                </p>
+                <p style="color: #6a7fa4; font-size: 0.9rem;">
+                    联系我们：洛谷私信 <a href="https://www.luogu.com.cn/chat?uid=958675">lzj</a> 
+                    或 <a href="https://www.luogu.com.cn/chat?uid=527300"> lsw</a>。
+                </p>
+            </div>
+        </main>
+    </div>
+    <script>
+    let resDiv = document.getElementById('result');
+    let preview = document.getElementById('preview');
+    let lstValid = '';
+    function submit() {
+        let input = document.getElementById('input').value.trim();
+        if (!input) return;
+        let p = document.createElement('p');
+        let exprHTML = `<span style=\"color:#3a7bd5;\">$${input}$</span>`;
+        p.innerHTML = `表达式：${exprHTML}<br><br>计算中...`;
+        let delButton = document.createElement('button');
+        delButton.textContent = '删除';
+        delButton.style.marginLeft = '10px';
+        delButton.onclick = function() {
+            resDiv.removeChild(p);
+        };
+        p.appendChild(delButton);
+        resDiv.appendChild(p);
+        document.getElementById('input').value = '';
+        lstValid = '';
+        preview.innerHTML = '';
+        rerender();
+        // 请求 DeepSeek 计算
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: [{ role: 'user', content: input }] })
+        }).then(async resp => {
+            const data = await resp.json();
+            if (resp.ok) {
+                let result = data.choices[0].message.content;
+                p.innerHTML = `表达式：${exprHTML}<br><br>结果：<span class="calc-result">${result}</span>`;
+                p.appendChild(delButton);
+                rerender();
+            } else {
+                p.innerHTML = `表达式：${exprHTML}<br><br><span style='color:red;'>错误: ${data.error || '未知错误'}</span>`;
+                p.appendChild(delButton);
+            }
+        }).catch(e => {
+            p.innerHTML = `表达式：${exprHTML}<br><br><span style='color:red;'>网络错误</span>`;
+            p.appendChild(delButton);
+        });
+    }
+    document.getElementById('input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            submit();
+        }
+    });
+    function updatePreview() {
+        let input = document.getElementById('input').value;
+        try {
+            katex.render(input, preview, {throwOnError: true});
+            lstValid = input;
+        } catch (e) {
+            if (document.getElementById('showError').checked) {
+                preview.innerHTML = `<span style="color: red;">[Error] ${e.message}</span>`;
+            } else {
+                preview.innerHTML = `$${lstValid}$`;
+                rerender();
+            }
+        }
+    }
+    function showPanel(panel) {
+        document.getElementById('calculator-panel').style.display = (panel === 'calc') ? '' : 'none';
+        document.getElementById('about-panel').style.display = (panel === 'about') ? '' : 'none';
+        document.getElementById('btnCalc').disabled = (panel === 'calc');
+        document.getElementById('btnAbout').disabled = (panel === 'about');
+        rerender();
+    }
+    </script>
+</body>
+</html>
